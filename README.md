@@ -18,12 +18,7 @@ This Django application has the following features and pages:
      ii. 2021-06 -> 1684
 3. City_commission page where the user can select the city name on the form and receive the GuestReady commission amount for this city.
 
-### Tests - pytest
-
-There is a separate "tests" folder with test scripts, that can be run with pytest
-
 ### Requirements:
 
 Python==3.8.1
 Django==4.0.4
-pytest==6.2.4
