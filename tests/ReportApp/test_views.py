@@ -8,6 +8,7 @@ class TestViews(TestCase):
         self.upload_url = reverse('upload')
         self.report_url = reverse('report')
         self.city_commission_url = reverse('city_commission')
+        
 
 
     def test_upload_GET(self):
@@ -15,6 +16,13 @@ class TestViews(TestCase):
 
         self.assertEquals(response.status_code, 200)
         self.assertTemplateUsed(response, 'ReportApp/upload.html')
+
+    
+    def test_upload_POST(self):
+        with open('Reservations.csv', 'rb') as csv:
+            response = self.client.post(self.upload_url, data={'file': csv})
+            self.assertRedirects(response, '/report', status_code=302, 
+            target_status_code=200, fetch_redirect_response=True)
 
 
     def test_upload_POST_empty(self):
@@ -36,13 +44,5 @@ class TestViews(TestCase):
 
         self.assertEquals(response.status_code, 200)
         self.assertTemplateUsed(response, 'ReportApp/city_commission.html')
-
-
-    def test_city_commission_POST(self):
-        response = self.client.post(self.city_commission_url, {'city': 'LONDON'})
-
-        self.assertEquals(response.status_code, 200)
-
-
 
 
