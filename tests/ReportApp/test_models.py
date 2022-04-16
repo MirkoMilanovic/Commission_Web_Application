@@ -1,30 +1,19 @@
-import pytest
 from datetime import date
-from ReportApp.models import Reservations
+from django.test import TestCase
+from ReportApp.models import Reservation
 
 
-@pytest.fixture
-def category(db) -> Reservations:
-    return Reservations.objects.create(
-        reservation="Reservation 1",  
-        checkin = date(22, 1, 1),
-        checkout = date(22, 2, 2),
-        flat = 'Flat 1',
-        city = 'City 1',
-        net_income = 1000
-    )
-
-def test_filter_category(category):
-    assert Reservations.objects.filter(reservation="Reservation 1").exists()
-    assert Reservations.objects.filter(checkin = date(22, 1, 1)).exists()
-    assert Reservations.objects.filter(checkout = date(22, 2, 2)).exists()
-    assert Reservations.objects.filter(flat = 'Flat 1').exists()
-    assert Reservations.objects.filter(city = 'City 1').exists()
-    assert Reservations.objects.filter(net_income = 1000).exists()
+class TestModels(TestCase):
+    def setUp(self):
+        self.reservation1 = Reservation.objects.create(
+            reservation_code = 'Reservation1',
+            checkin = date(22, 1, 1),
+            checkout = date(22, 2, 2),
+            flat = 'Flat1',
+            city = 'City1',
+            net_income = 1000
+        )
 
 
-def test_update_category(category):
-    category.reservation = "Reservation 2"
-    category.save()
-    category_from_db = Reservations.objects.get(reservation="Reservation 2")
-    assert category_from_db.reservation == "Reservation 2"
+    def test_reservation(self):
+        self.assertEquals(self.reservation1.net_income, 1000)

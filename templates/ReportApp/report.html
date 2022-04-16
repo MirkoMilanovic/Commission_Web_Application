@@ -25,13 +25,20 @@
   <body>
     <div style="margin-left: 25px">
       <div class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content">
-        <div class="alert alert-success">
-          <h3>Well done!</h3>
-          <h5>Upload is successful. Data saved to DB.</h5>
-        </div>
+        <h5>
+          <div class="alert alert-success">
+            <h3>Report</h3>
+            {% if messages %}
+            <ul class="messages">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+            </ul>
+            {% endif %}
+          </div>
+        </h5>
 
         <h2>Loaded reservations:</h2>
-        {{ report.checkin }} {{ report.checkout }} {{ report.flat }}
         <div class="table-responsive">
           <table class="table table-bordered">
             <tr>
@@ -48,7 +55,7 @@
             </tr>
             {% for report in reports %}
             <tr>
-              <td>{{ report.reservation }}</td>
+              <td>{{ report.reservation_code }}</td>
               <td>{{ report.checkin }}</td>
               <td>{{ report.checkout }}</td>
               <td>{{ report.flat }}</td>
@@ -66,8 +73,10 @@
               </h3>
             </strong>
           </div>
-          <a class="btn btn-secondary" href="/upload">Upload a new csv file </a>
-          <a class="btn btn-secondary" href="/city_commission"
+          <a class="btn btn-secondary" href="{% url 'upload' %}"
+            >Upload a new csv file
+          </a>
+          <a class="btn btn-secondary" href="{% url 'city_commission' %}"
             >Total commission amount per city
           </a>
         </div>

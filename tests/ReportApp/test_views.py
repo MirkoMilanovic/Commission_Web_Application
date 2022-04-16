@@ -1,49 +1,48 @@
-import pytest
-
-from django.test import RequestFactory, Client
+from django.test import TestCase, Client
 from django.urls import reverse
-from ReportApp.models import Reservations
-from datetime import date
-from ReportApp.views import upload, report, city_commission
-
-@pytest.fixture
-def category(db) -> Reservations:
-    return Reservations.objects.create(
-        reservation="Reservation 1",  
-        checkin = date(22, 1, 1),
-        checkout = date(22, 2, 2),
-        flat = 'Flat 1',
-        city = 'City 1',
-        net_income = 1000
-    )
-
-reservation = {
-    'reservation':"Reservation 2",  
-    'checkin' : date(22, 1, 1),
-    'checkout' : date(22, 2, 2),
-    'flat' : 'Flat 1',
-    'city' : 'City 1',
-    'net_income' : 1000 
-}
-
-def test_1(category):
-    factory = RequestFactory()
-    request = factory.get('/upload')
-    response = upload(request)
-    assert response.status_code == 200
 
 
-def test_redirection_upload():
-    c = Client()
+class TestViews(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.upload_url = reverse('upload')
+        self.report_url = reverse('report')
+        self.city_commission_url = reverse('city_commission')
 
-    response = c.get(reverse('upload'), reservation)
 
-    assert response.status_code == 302
+    def test_upload_GET(self):
+        response = self.client.get(self.upload_url)
+
+        self.assertEquals(response.status_code, 200)
+        self.assertTemplateUsed(response, 'ReportApp/upload.html')
 
 
-def test_redirection_report():
-    c = Client()
+    def test_upload_POST_empty(self):
+        response = self.client.post(self.upload_url, {})
 
-    response = c.get(reverse('report'))
+        self.assertRedirects(response, '/error_upload', status_code=302, 
+        target_status_code=200, fetch_redirect_response=True)
 
-    assert response.status_code == 302
+
+    def test_report_GET(self):
+        response = self.client.get(self.report_url)
+
+        self.assertEquals(response.status_code, 200)
+        self.assertTemplateUsed(response, 'ReportApp/report.html')
+
+
+    def test_city_commission_GET(self):
+        response = self.client.get(self.city_commission_url)
+
+        self.assertEquals(response.status_code, 200)
+        self.assertTemplateUsed(response, 'ReportApp/city_commission.html')
+
+
+    def test_city_commission_POST(self):
+        response = self.client.post(self.city_commission_url, {'city': 'LONDON'})
+
+        self.assertEquals(response.status_code, 200)
+
+
+
+

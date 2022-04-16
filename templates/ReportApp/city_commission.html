@@ -23,7 +23,9 @@
   <body>
     <div style="margin-left: 25px">
       <div class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content">
-        <h3 class="alert alert-success">Total commission amount for city</h3>
+        <h3 class="alert alert-success">
+          Total commission amount for the city
+        </h3>
         <br />
         <div class="form-group">
           <form method="post" class="btn btn-secondary btn-lg dropdown-toggle">
@@ -53,8 +55,12 @@
             total commission amount for this city.
           </h5>
         </div>
-        <a class="btn btn-secondary" href="/upload">Upload a new csv file </a>
-        <a class="btn btn-secondary" href="/report">Return to the report </a>
+        <a class="btn btn-secondary" href="{% url 'upload' %}"
+          >Upload a new csv file
+        </a>
+        <a class="btn btn-secondary" href="{% url 'report' %}"
+          >Return to the report
+        </a>
       </div>
     </div>
   </body>

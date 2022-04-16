@@ -1,11 +1,10 @@
 from django import forms
-from django.core import validators
-from . import views
+from .constants import COMMISSION_RATES
 
 
 class RatesForm(forms.Form): 
-    rates = forms.ChoiceField(choices = [])
+    city = forms.ChoiceField(choices = [])
 
     def __init__(self, *args, **kwargs):
         super(RatesForm, self).__init__(*args, **kwargs)
-        self.fields['rates'].choices = [(key, key) for key, value in views.commission_rates.items()]
+        self.fields['city'].choices = [(key, key) for key in COMMISSION_RATES.keys()]

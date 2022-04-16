@@ -1,19 +1,30 @@
+from django.test import SimpleTestCase
 from django.urls import reverse, resolve
-from ReportApp.views import upload, report, city_commission
+from ReportApp.views import UploadView, ReportView, CityCommissionView, ErrorReportView, ErrorUploadView
 
 
-def test_upload_url():
-    path = reverse('upload')
-    assert resolve(path).func == upload
+class TestUrls(SimpleTestCase):
+
+    def test_list_url_upload(self):
+        url = reverse('upload')
+        self.assertEquals(resolve(url).func.view_class, UploadView)
 
 
-def test_report_url():
-    path = reverse('report')
-    assert resolve(path).func == report
+    def test_add_url_report(self):
+        url = reverse('report')
+        self.assertEquals(resolve(url).func.view_class, ReportView)
 
 
-def test_city_commission_url():
-    path = reverse('city_commission')
-    assert resolve(path).func == city_commission
+    def test_detail_url_city_commission(self):
+        url = reverse('city_commission')
+        self.assertEquals(resolve(url).func.view_class, CityCommissionView)
+
+    
+    def test_test_detail_url_city_commission_url_error_upload(self):
+        url = reverse('error_upload')
+        self.assertEquals(resolve(url).func.view_class, ErrorUploadView)
 
 
+    def test_test_detail_url_city_commission_url_error_report(self):
+        url = reverse('error_report')
+        self.assertEquals(resolve(url).func.view_class, ErrorReportView)
