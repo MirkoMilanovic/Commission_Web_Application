@@ -1,7 +1,7 @@
 COMMISSION_RATES = {
-    'LONDON': 10,
-    'PARIS': 12,
-    'PORTO': 9,
+    'LONDON': 10.00,
+    'PARIS': 12.00,
+    'PORTO': 9.00,
 }
 
 COMMISSION_PER_MONTH = {

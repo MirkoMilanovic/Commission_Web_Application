@@ -3,7 +3,7 @@ import csv, io
 
 
 def populateReservations(request):
-    csv_file = request.FILES['file']
+    csv_file = request.FILES.get("file", None)
     data_set = csv_file.read().decode('UTF-8')
 
     io_string = io.StringIO(data_set)

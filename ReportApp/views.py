@@ -4,7 +4,9 @@ from .models import Reservation
 from .forms import RatesForm
 from .populate_reservations import populateReservations
 from django.contrib import messages
-from django.db.models import Sum
+from django.db.models import Sum, F, CharField, Value
+from django.db.models.functions import Concat
+from django.db import models
 from .constants import COMMISSION_RATES, COMMISSION_PER_MONTH
 
 
@@ -31,19 +33,18 @@ class ReportView(View):
  
             total_commission = 0
 
-            for reservation in reservations_table:
-                for city in COMMISSION_RATES.keys():
-                    if reservation.city == city.upper():
-                        total_commission += reservation.net_income * COMMISSION_RATES[city] / 100
+            for city in COMMISSION_RATES.keys():
+                total_commission += Reservation.objects.filter(city=city).aggregate(result = Sum((F('net_income') * COMMISSION_RATES.get(city) / 100), output_field = models.DecimalField(max_digits=10, decimal_places=2)))['result']
 
-            for reservation in reservations_table:
-                for month in COMMISSION_PER_MONTH:
-                    if reservation.checkout.month == month:
-                        reservation.monthly = COMMISSION_PER_MONTH[month]
+            query_list_commission = []
 
+            for month in COMMISSION_PER_MONTH.keys():
+                query_list_commission.append(reservations_table.filter(checkout__month=month).annotate(monthly=Concat('checkout__year', Value('-'), 'checkout__month', Value(' -> '), COMMISSION_PER_MONTH.get(month), output_field=CharField(max_length=150))))
+
+            result_table = Reservation.objects.none().union(*query_list_commission)
 
             report_context = {
-                'reports': reservations_table,
+                'reports': result_table,
                 'total': total_commission,
             }
 
@@ -68,7 +69,8 @@ class CityCommissionView(View):
         form = RatesForm(request.POST)
         
         if form.is_valid():
-            commission_amount_city = Reservation.objects.filter(city=form.cleaned_data["city"]).aggregate(sum_net = Sum('net_income'))['sum_net']*COMMISSION_RATES[form.cleaned_data['city']] / 100
+            city = form.cleaned_data['city']
+            commission_amount_city = Reservation.objects.filter(city=city).aggregate(result = Sum((F('net_income') * COMMISSION_RATES.get(city) / 100), output_field = models.DecimalField(max_digits=10, decimal_places=2)))['result']
 
         rate_context = {
             'form': form, 
